@@ -29,6 +29,7 @@ typedef enum {
   CC_SET_PBM_ON   = 0x11,
   CC_RESET_BR     = 0x20,
   CC_SET_BR       = 0x21,
+  CC_SET_BR_SLOW  = 0x22,
 } ControlCode;
 
 // Packet type enum.
@@ -174,7 +175,7 @@ void handle_state_wait_for_connection() {
    Decode encoded data.
 */
 void handle_data_decode() {
-  short packet_length = packet_read_buffer.packet_header.packet_length;
+  unsigned short packet_length = packet_read_buffer.packet_header.packet_length;
   // If we have more data than is possible, set to the max we think is possible.
   if (packet_length > sizeof(current_state)) packet_length = sizeof(current_state);
   // This shouldn't happen, but as the rest of the method assumes that packet_length > 0, check to make sure here.
@@ -316,6 +317,19 @@ void handle_control_packet() {
       delay(100);
       start_serial();
       break;
+    case CC_SET_BR_SLOW:
+      /*
+       * Windows takes dramatically more time to change baudrate, so we need a longer delay.
+       */
+      baudrate = ((((long)packet_read_buffer.packet_data[1]) << 24)
+                  +  (((long)packet_read_buffer.packet_data[2]) << 16)
+                  +  (((long)packet_read_buffer.packet_data[3]) << 8)
+                  +  (((long)packet_read_buffer.packet_data[4])));
+      Serial.write(PC_PROT_RESPONSE);
+      stop_serial();
+      delay(2000);
+      start_serial();
+      break;
     case CC_NONE:
     default:
       return;
@@ -332,7 +346,7 @@ void handle_control_packet() {
    otherwise this state loops.
 */
 void handle_state_receive_packet() {
-  short read_bytes = 0;
+  unsigned short read_bytes = 0;
   unsigned short packet_length = 0;
 
   // Ask for data
@@ -519,4 +533,3 @@ void loop() {
       break;
   }
 }
-
