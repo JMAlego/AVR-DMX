@@ -10,7 +10,7 @@ The solution used in this project is to write the code to send the data in assem
 
 It is also worth noting that the output of the Uno is single-ended DMX and not the differential signal required to send over a DMX bus. Many chips, such as the MAX485, exist to convert between single-ended and DMX bus compatible differential signals. It is therefore simple to create a singled-ended to differential signal converter which will work with this project.
 
-My other, inventively named, [PyDMX](https://github.com/JMAlego/PyDMX) project features a working driver implementation for the AVR-DMX.
+My other, inventively named, [PyDMX](https://github.com/JMAlego/PyDMX) project features a working driver implementation for the AVR-DMX. My further, equally inventively named, [ArDMX](https://github.com/JMAlego/ArDMX) project is a DMX interface shield for the Arduino Uno which should be compatible with both of the other projects.
 
 ## Features
 
